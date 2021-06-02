@@ -7,7 +7,11 @@
 
 import Foundation
 
-class Entity {
+//MARK: - Internal Helper Classes and Structs
+
+internal class Entity {
+    
+    //MARK: Properties
     var name: String
     var representedClassName: String
     var syncable: String
@@ -15,16 +19,21 @@ class Entity {
     var attributes: [Attribute] = []
     var relationships: [Relationship] = []
     
+    
+    //MARK: Init
     init(with attributeDict: [String : String]) {
         name = attributeDict["name"] ?? ""
         representedClassName = attributeDict["representedClassName"] ?? ""
         syncable = attributeDict["syncable"]  ?? ""
     }
     
+    
+    //MARK: Public Methods
     func appendAttribute(with attributeDict: [String : String]) {
         let attribute = Attribute(with: attributeDict)
         attributes.append(attribute)
     }
+    
     
     func appendRelationship(with attributeDict: [String : String]) {
         let relationship = Relationship.init(with: attributeDict)
@@ -33,39 +42,45 @@ class Entity {
     
 }
 
-struct Attribute {
-    var name: String
+
+internal struct Attribute {
+    
     var attributeType: String
-    var defaultValueString: String
     var customClassName: String
+    var defaultValueString: String
+    var name: String
     var optional: String
     
+    
     init(with attributeDict: [String : String]) {
-        name = attributeDict["name"] ?? ""
         attributeType = attributeDict["attributeType"] ?? ""
-        defaultValueString = attributeDict["defaultValueString"] ?? ""
         customClassName = attributeDict["customClassName"] ?? ""
+        defaultValueString = attributeDict["defaultValueString"] ?? ""
+        name = attributeDict["name"] ?? ""
         optional = attributeDict["optional"] ?? ""
+        
     }
     
 }
 
-struct Relationship {
-    var name: String = ""
 
+internal struct Relationship {
+    
+    var deletionRule: String = ""
     var destinationEntity: String = ""
     var inverseEntity: String = ""
     var inverseName: String = ""
-    var deletionRule: String = ""
+    var name: String = ""
     var optional: String = ""
     var toMany: String = ""
     
+    
     init(with attributeDict: [String : String]) {
-        name = attributeDict["name"] ?? ""
+        deletionRule = attributeDict["deletionRule"] ?? ""
         destinationEntity = attributeDict["destinationEntity"] ?? ""
         inverseEntity = attributeDict["inverseEntity"] ?? ""
         inverseName = attributeDict["inverseName"] ?? ""
-        deletionRule = attributeDict["deletionRule"] ?? ""
+        name = attributeDict["name"] ?? ""
         optional = attributeDict["optional"] ?? ""
         toMany = attributeDict["toMany"] ?? ""
     }
@@ -73,6 +88,8 @@ struct Relationship {
 }
 
 
+//MARK: -
+//MARK: - CoreDataModelParser
 class CoreDataModelParser: XMLParser {
     
     var content: [Entity] = []
@@ -81,143 +98,142 @@ class CoreDataModelParser: XMLParser {
     override init(data: Data) {
         super.init(data: data)
         delegate = self
-    
     }
-        
-    
-    
-    
     
 }
 
 
-
+//MARK: - Extension - XMLParserDelegate
 extension CoreDataModelParser:  XMLParserDelegate {
     
     func parserDidStartDocument(_ parser: XMLParser) {
-        Swift.print("\(#function)")
     }
     
+    
     func parserDidEndDocument(_ parser: XMLParser) {
-        Swift.print("\(#function)")
-        
-        content.forEach { entity in
-            Swift.print("entity.name: \(entity.name)")
-            Swift.print("entity.attributes.count: \(entity.attributes.count)")
-            Swift.print("entity.relationships.count: \(entity.relationships.count)")
-        }
-        
         createMD()
-        
-//        Swift.print("")
-//        let lines = markDownLines.joined(separator: "\n")
-//        Swift.print("\(lines)")
-        
     }
+    
     
     func parser(_ parser: XMLParser,
                 didStartElement elementName: String,
                 namespaceURI: String?,
                 qualifiedName qName: String?,
                 attributes attributeDict: [String : String] = [:]) {
-//        Swift.print("\(#function)")
-//        Swift.print("elementName: \(elementName)\n\(attributeDict)")
-//        Swift.print("------")
         
         if elementName == "entity" {
             let entity = Entity(with: attributeDict)
             content.append(entity)
         }
-        
         else if elementName == "attribute" {
             content.last?.appendAttribute(with: attributeDict)
         }
         else if elementName == "relationship" {
             content.last?.appendRelationship(with: attributeDict)
         }
-        
     }
     
 }
 
 
+//MARK: - Extension - Create Markdown
 extension CoreDataModelParser {
     
-    func createMD() {
+    private func createMD() {
         content.forEach { entity in
-            markDownLines.append("")
-            markDownLines.append("")
-            markDownLines.append("")
+            
             markDownLines.append("---")
             markDownLines.append("---")
             markDownLines.append("")
-            markDownLines.append(contentsOf: markDownLine(entity: entity))
+            markDownLines.append("")
+            markDownLines.append(contentsOf: markDownLines(entity: entity))
             markDownLines.append("")
             markDownLines.append("")
             markDownLines.append("")
             markDownLines.append("### Attributes")
             markDownLines.append("")
-            markDownLines.append(contentsOf: markDownLine(attributesOf: entity))
+            markDownLines.append(contentsOf: markDownLines(attributesOf: entity))
             markDownLines.append("")
             markDownLines.append("")
             markDownLines.append("")
             markDownLines.append("### Relationships")
             markDownLines.append("")
-            markDownLines.append(contentsOf: markDownLine(relationshipsOf: entity))
+            markDownLines.append(contentsOf: markDownLines(relationshipsOf: entity))
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("")
         }
     }
     
     
-    func markDownLine(entity: Entity)
+    private func markDownLines(entity: Entity)
     -> [String] {
         var markDownLines: [String] = []
         
         markDownLines.append("## \(entity.name)")
-        markDownLines.append("")
-        markDownLines.append(" className:\(entity.representedClassName)")
+        if entity.representedClassName != entity.name {
+            markDownLines.append("")
+            markDownLines.append(" ClassName: \(entity.representedClassName)")
+            markDownLines.append("")
+        }
+        
         markDownLines.append("")
         
         return markDownLines
     }
     
-    func markDownLine(attributesOf entity: Entity)
+    
+    private func markDownLines(attributesOf entity: Entity)
     -> [String] {
         var markDownLines: [String] = []
         
-        markDownLines.append("")
-        markDownLines.append("")
-        markDownLines.append("### Attributes")
         entity.attributes.forEach { attribute in
-            markDownLines.append("")
-            markDownLines.append("")
             markDownLines.append("#### \(attribute.name)")
             markDownLines.append("")
-            markDownLines.append(" * Type: \(attribute.attributeType)")
-            markDownLines.append(" * Default: \(attribute.defaultValueString)")
-            markDownLines.append(" * Optional: \(attribute.optional)")
-            markDownLines.append(" * CustomClassName: \(attribute.customClassName)")
+            markDownLines.append(" * Type: `\(attribute.attributeType)`")
+            if !attribute.defaultValueString.isEmpty {
+                markDownLines.append(" * Default: `\(attribute.defaultValueString)`")
+            }
+            
+            let optionalString = attribute.optional == "YES" ? "optional" : "required"
+            markDownLines.append(" * \(optionalString)")
+            
+            if !attribute.customClassName.isEmpty {
+                markDownLines.append(" * CustomClassName: `\(attribute.customClassName)`")
+            }
+            
+            markDownLines.append("")
         }
+        
+//        markDownLines.append("")
         
         return markDownLines
     }
     
-    func markDownLine(relationshipsOf entity: Entity)
+    
+    private func markDownLines(relationshipsOf entity: Entity)
     -> [String] {
         var markDownLines: [String] = []
         
-
+        
         entity.relationships.forEach { relationship in
-            markDownLines.append("")
-            markDownLines.append("")
             markDownLines.append("#### \(relationship.name)")
             markDownLines.append("")
-            markDownLines.append(" * inverseEntity: \(relationship.inverseEntity)")
-            markDownLines.append(" * inverseName: \(relationship.inverseName)")
-            markDownLines.append(" * destinationEntity: \(relationship.destinationEntity)")
-            markDownLines.append(" * toMany: \(relationship.toMany)")
-            markDownLines.append(" * Optional: \(relationship.optional)")
-            markDownLines.append(" * deletionRule: \(relationship.deletionRule)")
+            markDownLines.append(" * Target: `\(relationship.destinationEntity).\(relationship.inverseName)`")
+            
+            let toManyString = relationship.toMany == "YES" ? "to-many" : "to-one"
+            markDownLines.append(" * \(toManyString)")
+            
+            let optionalString = relationship.optional == "YES" ? "optional" : "required"
+            markDownLines.append(" * \(optionalString)")
+            
+            markDownLines.append(" * deletionRule: `\(relationship.deletionRule)`")
+            
+            markDownLines.append("")
+            markDownLines.append("")
         }
+        
+//        markDownLines.append("")
         
         return markDownLines
     }
