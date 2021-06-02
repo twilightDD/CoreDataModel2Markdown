@@ -12,6 +12,7 @@
 		D0882D5A2667C44800FC24DB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0882D592667C44800FC24DB /* Document.swift */; };
 		D0882D5C2667C44900FC24DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0882D5B2667C44900FC24DB /* Assets.xcassets */; };
 		D0882D5F2667C44900FC24DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0882D5D2667C44900FC24DB /* Main.storyboard */; };
+		D0882D682667C9CD00FC24DB /* CoreDataModelParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0882D672667C9CD00FC24DB /* CoreDataModelParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		D0882D5E2667C44900FC24DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D0882D602667C44900FC24DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D0882D612667C44900FC24DB /* CoreDataToMD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CoreDataToMD.entitlements; sourceTree = "<group>"; };
+		D0882D672667C9CD00FC24DB /* CoreDataModelParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModelParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 				D0882D552667C44800FC24DB /* AppDelegate.swift */,
 				D0882D572667C44800FC24DB /* ViewController.swift */,
 				D0882D592667C44800FC24DB /* Document.swift */,
+				D0882D672667C9CD00FC24DB /* CoreDataModelParser.swift */,
 				D0882D5B2667C44900FC24DB /* Assets.xcassets */,
 				D0882D5D2667C44900FC24DB /* Main.storyboard */,
 				D0882D602667C44900FC24DB /* Info.plist */,
@@ -136,6 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0882D582667C44800FC24DB /* ViewController.swift in Sources */,
+				D0882D682667C9CD00FC24DB /* CoreDataModelParser.swift in Sources */,
 				D0882D562667C44800FC24DB /* AppDelegate.swift in Sources */,
 				D0882D5A2667C44800FC24DB /* Document.swift in Sources */,
 			);
