@@ -76,6 +76,7 @@ struct Relationship {
 class CoreDataModelParser: XMLParser {
     
     var content: [Entity] = []
+    var markDownLines: [String] = []
     
     override init(data: Data) {
         super.init(data: data)
@@ -104,10 +105,14 @@ extension CoreDataModelParser:  XMLParserDelegate {
             Swift.print("entity.name: \(entity.name)")
             Swift.print("entity.attributes.count: \(entity.attributes.count)")
             Swift.print("entity.relationships.count: \(entity.relationships.count)")
-            
-            
-            
         }
+        
+        createMD()
+        
+//        Swift.print("")
+//        let lines = markDownLines.joined(separator: "\n")
+//        Swift.print("\(lines)")
+        
     }
     
     func parser(_ parser: XMLParser,
@@ -131,6 +136,90 @@ extension CoreDataModelParser:  XMLParserDelegate {
             content.last?.appendRelationship(with: attributeDict)
         }
         
+    }
+    
+}
+
+
+extension CoreDataModelParser {
+    
+    func createMD() {
+        content.forEach { entity in
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("---")
+            markDownLines.append("---")
+            markDownLines.append("")
+            markDownLines.append(contentsOf: markDownLine(entity: entity))
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("### Attributes")
+            markDownLines.append("")
+            markDownLines.append(contentsOf: markDownLine(attributesOf: entity))
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("### Relationships")
+            markDownLines.append("")
+            markDownLines.append(contentsOf: markDownLine(relationshipsOf: entity))
+        }
+    }
+    
+    
+    func markDownLine(entity: Entity)
+    -> [String] {
+        var markDownLines: [String] = []
+        
+        markDownLines.append("## \(entity.name)")
+        markDownLines.append("")
+        markDownLines.append(" className:\(entity.representedClassName)")
+        markDownLines.append("")
+        
+        return markDownLines
+    }
+    
+    func markDownLine(attributesOf entity: Entity)
+    -> [String] {
+        var markDownLines: [String] = []
+        
+        markDownLines.append("")
+        markDownLines.append("")
+        markDownLines.append("### Attributes")
+        entity.attributes.forEach { attribute in
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("#### \(attribute.name)")
+            markDownLines.append("")
+            markDownLines.append(" * Type: \(attribute.attributeType)")
+            markDownLines.append(" * Default: \(attribute.defaultValueString)")
+            markDownLines.append(" * Optional: \(attribute.optional)")
+            markDownLines.append(" * CustomClassName: \(attribute.customClassName)")
+        }
+        
+        return markDownLines
+    }
+    
+    func markDownLine(relationshipsOf entity: Entity)
+    -> [String] {
+        var markDownLines: [String] = []
+        
+
+        entity.relationships.forEach { relationship in
+            markDownLines.append("")
+            markDownLines.append("")
+            markDownLines.append("#### \(relationship.name)")
+            markDownLines.append("")
+            markDownLines.append(" * inverseEntity: \(relationship.inverseEntity)")
+            markDownLines.append(" * inverseName: \(relationship.inverseName)")
+            markDownLines.append(" * destinationEntity: \(relationship.destinationEntity)")
+            markDownLines.append(" * toMany: \(relationship.toMany)")
+            markDownLines.append(" * Optional: \(relationship.optional)")
+            markDownLines.append(" * deletionRule: \(relationship.deletionRule)")
+        }
+        
+        return markDownLines
     }
     
 }

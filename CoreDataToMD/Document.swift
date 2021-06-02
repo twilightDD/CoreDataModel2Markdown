@@ -10,8 +10,9 @@ import Cocoa
 class Document: NSDocument {
 
     var coreDataModelParser: CoreDataModelParser?
+   
+    var markdown: String?
     
-    var xmlDocument: XMLDocument?
     
     override init() {
         super.init()
@@ -40,13 +41,7 @@ class Document: NSDocument {
         // Alternatively, you could remove this method and override read(from:ofType:) instead.
         // If you do, you should also override isEntireFileLoaded to return false if the contents are lazily loaded.
         
-//        do {
-//            xmlDocument = try XMLDocument.init(data: data, options: .documentValidate)
-//        }
-//        catch let initError {
-//            Swift.print("\(initError)")
-//        }
-        
+
         
         coreDataModelParser = CoreDataModelParser.init(data: data)
         
@@ -57,12 +52,14 @@ class Document: NSDocument {
             Swift.print("neeeeeee")
         }
         
+        Swift.print("")
+        markdown = coreDataModelParser?.markDownLines.joined(separator: "\n")
+        Swift.print("\(markdown!)")
         
         
         
         
-        
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+       // throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }
 
 
